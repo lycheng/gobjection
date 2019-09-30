@@ -1,17 +1,6 @@
 Objection!
 ===
 
-A tool use for test with input and output in blackbox
+Golang libray and applications
 
-Input can be:
-
-* Kafka msg
-* HTTP Request
-* Redis operation
-
-Output can be:
-
-* Kafka msg
-* HTTP Response
-* Database records
-* Redis key-value
+* hello - echo hello world
