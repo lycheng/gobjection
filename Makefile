@@ -1,4 +1,7 @@
-VERSION=v0.0.1
+_GIT_LAST_COMMIT_TIME=$(shell TZ=UTC git log --pretty=format:'%cd' -1 --date=format-local:'%Y%m%d-%H%M%S')
+_GIT_LAST_COMMIT_HASH=$(shell git rev-parse --short HEAD)
+
+_VERSION=$(_GIT_LAST_COMMIT_TIME).$(_GIT_LAST_COMMIT_HASH)
 
 GOCMD=go
 GOBUILD=$(GOCMD) build
@@ -6,12 +9,15 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 
+GOLDFLAGS += -X main.Version=$(_VERSION)
+GOFLAGS = -ldflags "$(GOLDFLAGS)"
+
 version:
-	@echo ${VERSION}
+	@echo ${_VERSION}
 
 init:
 	@mkdir -p bin
 
 # Programs
 hello: init
-	$(GOBUILD) -o bin/hello -v ./cmd/hello
+	$(GOBUILD) $(GOFLAGS) -o bin/hello -v ./cmd/hello
