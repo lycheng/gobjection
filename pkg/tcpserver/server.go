@@ -1,7 +1,6 @@
 package tcpserver
 
 import (
-	"bufio"
 	"net"
 
 	"github.com/lycheng/gobjection/pkg/logger"
@@ -12,19 +11,25 @@ import (
 type Server struct {
 	network string
 	address string
+	creater ClientCreator
 }
 
-// Client holds info about connection
-type Client struct {
-	conn net.Conn
-	srv  *Server
+// ClientCreator is the tcp client creator interface
+type ClientCreator interface {
+	new(conn net.Conn, srv *Server) Clienter
+}
+
+// Clienter use for tcp client
+type Clienter interface {
+	handleConn()
 }
 
 // New returns server instance
-func New(network string, address string) *Server {
+func New(network string, address string, creater ClientCreator) *Server {
 	srv := &Server{
 		address: address,
 		network: network,
+		creater: creater,
 	}
 	return srv
 }
@@ -40,28 +45,12 @@ func (s *Server) Listen() {
 
 	for {
 		conn, err := ln.Accept()
-		client := &Client{
-			conn: conn,
-			srv:  s,
+		if err != nil {
+			logger.Logger.WithField("stage", "accepted").Warn(err)
+			continue
 		}
 
-		if err != nil {
-			logger.Logger.WithField("stage", "accept").Warn(err)
-		}
-		go client.Work()
-	}
-}
-
-// Work handles TCP traffic
-func (c *Client) Work() {
-	logger.Logger.WithField("stage", "connected").Info("accept", c.conn.RemoteAddr())
-	reader := bufio.NewReader(c.conn)
-	for {
-		message, err := reader.ReadString('\n')
-		if err != nil {
-			c.conn.Close()
-			return
-		}
-		logger.Logger.WithField("stage", "read").Info(message)
+		client := s.creater.new(conn, s)
+		go client.handleConn()
 	}
 }
