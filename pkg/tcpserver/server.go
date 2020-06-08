@@ -40,30 +40,34 @@ func (s *Server) Run() {
 
 	wg := &sync.WaitGroup{}
 	wg.Add(1) // For the waiting signals
-	go s.loop(ctx, wg, ln)
 	go func() {
 		defer wg.Done()
 		signals.WaitToStopped()
-		logger.Logger.Info("exit")
 		cancel()
 	}()
+
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					logger.Logger.WithField("stage", "accepted").Warn(err)
+				}
+				continue
+			}
+
+			wg.Add(1)
+			client := s.handlerCreator.new(ctx, conn, s)
+			go func() {
+				defer wg.Done()
+				client.handleConn()
+			}()
+		}
+	}()
+
 	wg.Wait()
 	logger.Logger.Info("EXIT")
-}
-
-func (s *Server) loop(ctx context.Context, wg *sync.WaitGroup, ln net.Listener) {
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			logger.Logger.WithField("stage", "accepted").Warn(err)
-			continue
-		}
-
-		wg.Add(1)
-		client := s.handlerCreator.new(ctx, conn, s)
-		go func() {
-			defer wg.Done()
-			client.handleConn()
-		}()
-	}
 }
