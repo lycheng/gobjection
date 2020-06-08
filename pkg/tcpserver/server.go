@@ -1,41 +1,34 @@
 package tcpserver
 
 import (
+	"context"
 	"net"
+	"sync"
 
 	"github.com/lycheng/gobjection/pkg/logger"
+	"github.com/lycheng/gobjection/pkg/signals"
 )
 
 // Server for TCP server
 // reference: https://github.com/firstrow/tcp_server
 type Server struct {
-	network string
-	address string
-	creater ClientCreator
-}
-
-// ClientCreator is the tcp client creator interface
-type ClientCreator interface {
-	new(conn net.Conn, srv *Server) Clienter
-}
-
-// Clienter use for tcp client
-type Clienter interface {
-	handleConn()
+	network        string
+	address        string
+	handlerCreator HandlerCreator
 }
 
 // New returns server instance
-func New(network string, address string, creater ClientCreator) *Server {
+func New(network string, address string, creater HandlerCreator) *Server {
 	srv := &Server{
-		address: address,
-		network: network,
-		creater: creater,
+		address:        address,
+		network:        network,
+		handlerCreator: creater,
 	}
 	return srv
 }
 
-// Listen starts network server
-func (s *Server) Listen() {
+// Run starts the TCP server
+func (s *Server) Run() {
 	ln, err := net.Listen(s.network, s.address)
 	if err != nil {
 		logger.Logger.Fatal(err)
@@ -43,6 +36,22 @@ func (s *Server) Listen() {
 
 	defer ln.Close()
 
+	ctx, cancel := context.WithCancel(context.Background())
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1) // For the waiting signals
+	go s.loop(ctx, wg, ln)
+	go func() {
+		defer wg.Done()
+		signals.WaitToStopped()
+		logger.Logger.Info("exit")
+		cancel()
+	}()
+	wg.Wait()
+	logger.Logger.Info("EXIT")
+}
+
+func (s *Server) loop(ctx context.Context, wg *sync.WaitGroup, ln net.Listener) {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -50,7 +59,11 @@ func (s *Server) Listen() {
 			continue
 		}
 
-		client := s.creater.new(conn, s)
-		go client.handleConn()
+		wg.Add(1)
+		client := s.handlerCreator.new(ctx, conn, s)
+		go func() {
+			defer wg.Done()
+			client.handleConn()
+		}()
 	}
 }

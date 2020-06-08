@@ -19,5 +19,5 @@ func main() {
 	ecs := &tcpserver.EchoServerCreater{}
 
 	server := tcpserver.New(network, address, ecs)
-	server.Listen()
+	server.Run()
 }
