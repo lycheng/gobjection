@@ -24,8 +24,8 @@ init:
 hello: init
 	$(GOBUILD) $(GOFLAGS) -o bin/hello -v ./cmd/hello
 
-tcpserver: init
-	$(GOBUILD) $(GOFLAGS) -o bin/tcpserver -v ./cmd/tcpserver
+echoserver: init
+	$(GOBUILD) $(GOFLAGS) -o bin/echoserver -v ./cmd/echoserver
 
-run-tcpserver: tcpserver
+run-echoserver: echoserver
 	./bin/tcpserver

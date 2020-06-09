@@ -16,7 +16,7 @@ func main() {
 	network := envs.GetEnvWithDefault("ADDRESS", "tcp")
 	address := envs.GetEnvWithDefault("ADDRESS", ":8080")
 
-	ecs := &tcpserver.EchoServerCreater{}
+	ecs := &EchoServerCreater{}
 
 	server := tcpserver.New(network, address, ecs)
 	server.Run()

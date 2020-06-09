@@ -1,4 +1,4 @@
-package tcpserver
+package main
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/lycheng/gobjection/pkg/logger"
+	"github.com/lycheng/gobjection/pkg/tcpserver"
 )
 
 var (
@@ -22,10 +23,11 @@ type EchoServerCreater struct {
 type EchoServer struct {
 	ctx  context.Context
 	conn net.Conn
-	srv  *Server
+	srv  *tcpserver.Server
 }
 
-func (esc *EchoServerCreater) new(ctx context.Context, conn net.Conn, srv *Server) Handler {
+// New return new instance of EchoServerCreater
+func (esc *EchoServerCreater) New(ctx context.Context, conn net.Conn, srv *tcpserver.Server) tcpserver.Handler {
 	es := &EchoServer{
 		ctx:  ctx,
 		conn: conn,
@@ -34,7 +36,8 @@ func (esc *EchoServerCreater) new(ctx context.Context, conn net.Conn, srv *Serve
 	return es
 }
 
-func (es *EchoServer) handleConn() {
+// HandleConn to echo the user input
+func (es *EchoServer) HandleConn() {
 	logger.Logger.WithField("client", es.conn.RemoteAddr()).Info("accept")
 	reader := bufio.NewReader(es.conn)
 	for {

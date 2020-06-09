@@ -60,10 +60,10 @@ func (s *Server) Run() {
 			}
 
 			wg.Add(1)
-			client := s.handlerCreator.new(ctx, conn, s)
+			client := s.handlerCreator.New(ctx, conn, s)
 			go func() {
 				defer wg.Done()
-				client.handleConn()
+				client.HandleConn()
 			}()
 		}
 	}()
