@@ -1,3 +1,5 @@
+.PHONY: version init hello tcpserver run-tcpserver
+
 _GIT_LAST_COMMIT_TIME=$(shell TZ=UTC git log --pretty=format:'%cd' -1 --date=format-local:'%Y%m%d-%H%M%S')
 _GIT_LAST_COMMIT_HASH=$(shell git rev-parse --short HEAD)
 
@@ -21,3 +23,9 @@ init:
 # Programs
 hello: init
 	$(GOBUILD) $(GOFLAGS) -o bin/hello -v ./cmd/hello
+
+echoserver: init
+	$(GOBUILD) $(GOFLAGS) -o bin/echoserver -v ./cmd/echoserver
+
+run-echoserver: echoserver
+	./bin/tcpserver

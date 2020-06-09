@@ -1,4 +1,4 @@
-package env
+package envs
 
 import (
 	"fmt"
@@ -18,6 +18,15 @@ func InitWithPrefix(prefix string) {
 func GetEnv(key string) string {
 	k := fmt.Sprintf("%s%s", envPrefix, key)
 	return os.Getenv(k)
+}
+
+// GetEnvWithDefault return env variable and if not set returns defaultVal
+func GetEnvWithDefault(key string, defaultVal string) string {
+	v := GetEnv(key)
+	if v == "" {
+		return defaultVal
+	}
+	return v
 }
 
 // SetEnv update environment var with common prefix
