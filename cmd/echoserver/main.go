@@ -10,13 +10,17 @@ import (
 var Version string
 
 func main() {
-	logger.Logger.WithField("project", "tcpserver").WithField("version", Version).Info("start")
 
 	envs.InitWithPrefix("TCPSERVER_")
-	network := envs.GetEnvWithDefault("ADDRESS", "tcp")
+	network := envs.GetEnvWithDefault("NETWORK", "tcp")
 	address := envs.GetEnvWithDefault("ADDRESS", ":8080")
 
 	ecs := &EchoServerCreater{}
+	logger.Logger.
+		WithField("project", "tcpserver").
+		WithField("network", network).
+		WithField("address", address).
+		Info("start")
 
 	server := tcpserver.New(network, address, ecs)
 	server.Run()

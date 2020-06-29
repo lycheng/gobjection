@@ -28,4 +28,4 @@ echoserver: init
 	$(GOBUILD) $(GOFLAGS) -o bin/echoserver -v ./cmd/echoserver
 
 run-echoserver: echoserver
-	./bin/tcpserver
+	./bin/echoserver
