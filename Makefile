@@ -20,6 +20,15 @@ version:
 init:
 	@mkdir -p bin
 
+test: test-pkg
+	@echo "TESTS ALL PASSED"
+
+# Pkg
+
+# Pkg test
+test-pkg:
+	go test -v ./pkg/...
+
 # Programs
 hello: init
 	$(GOBUILD) $(GOFLAGS) -o bin/hello -v ./cmd/hello
