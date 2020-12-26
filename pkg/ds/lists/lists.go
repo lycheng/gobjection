@@ -12,4 +12,5 @@ type List interface {
 	// IsEmpty() bool
 	// Size() int
 	// Clear()
+	// GetIterator() Iterator
 }

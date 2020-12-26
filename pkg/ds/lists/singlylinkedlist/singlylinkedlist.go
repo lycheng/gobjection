@@ -7,6 +7,11 @@ type List struct {
 	size int
 }
 
+// ListIterator use to traverse List
+type ListIterator struct {
+	curr *item
+}
+
 type item struct {
 	value interface{}
 	next  *item
@@ -63,6 +68,7 @@ func (list *List) Pop(i int) (interface{}, bool) {
 	if prev != nil {
 		prev.next = curr.next
 	}
+	list.size--
 	return curr.value, true
 }
 
@@ -94,4 +100,19 @@ func (list *List) Clear() {
 	list.size = 0
 	list.head = nil
 	list.tail = nil
+}
+
+// GetIterator returns list iterator
+func (list *List) GetIterator() *ListIterator {
+	return &ListIterator{curr: list.head}
+}
+
+// Next returns next value of the list or nil for the end
+func (li *ListIterator) Next() interface{} {
+	if li.curr == nil {
+		return nil
+	}
+	rv := li.curr.value
+	li.curr = li.curr.next
+	return rv
 }

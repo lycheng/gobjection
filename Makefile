@@ -21,13 +21,18 @@ init:
 	@mkdir -p bin
 
 test: test-pkg
-	@echo "TESTS ALL PASSED"
+	@echo "ALL TESTS PASSED"
 
 # Pkg
 
-# Pkg test
-test-pkg:
-	go test -v ./pkg/...
+## Pkg test
+test-pkg: test-pkg-ds
+	@echo "PKG TESTS PASSED"
+
+### Pkg ds test
+test-pkg-ds:
+	$(GOTEST) -v ./pkg/ds/lists/singlylinkedlist/
+
 
 # Programs
 hello: init
