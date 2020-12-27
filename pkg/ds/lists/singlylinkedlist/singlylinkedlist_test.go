@@ -4,6 +4,15 @@ import (
 	"testing"
 )
 
+func assertListEquals(values []interface{}, expected []int) bool {
+	for idx, i := range values {
+		if expected[idx] != i.(int) {
+			return false
+		}
+	}
+	return true
+}
+
 func TestNewList(t *testing.T) {
 	a := New(1, 2, 3)
 
@@ -13,6 +22,10 @@ func TestNewList(t *testing.T) {
 
 	if a.IsEmpty() {
 		t.Error("list should not empty")
+	}
+
+	if !assertListEquals(a.Values(), []int{1, 2, 3}) {
+		t.Error("list values error")
 	}
 
 	b := New()
@@ -32,7 +45,7 @@ func TestNewList(t *testing.T) {
 
 func TestListIterator(t *testing.T) {
 	a := New(1, 2, 3)
-	iter := a.GetIterator()
+	iter := a.Iterator()
 	if iter.Next() != 1 {
 		t.Error("list iterator return not equals to 1")
 	}
@@ -92,13 +105,17 @@ func TestListPopAndAppend(t *testing.T) {
 		t.Error("list pop index 3 error")
 	}
 
-	v, flag = a.Pop(2)
-	if v != 3 || !flag || a.Size() != 2 {
+	v, flag = a.Pop(1)
+	if v != 2 || !flag || a.Size() != 2 {
 		t.Error("list pop index 2 error")
 	}
 
+	if !assertListEquals(a.Values(), []int{1, 3}) {
+		t.Error("list values error")
+	}
+
 	v, flag = a.Get(1)
-	if v != 2 || !flag {
+	if v != 3 || !flag {
 		t.Error("list get tail item error")
 	}
 }

@@ -1,5 +1,7 @@
 package singlylinkedlist
 
+import "github.com/lycheng/gobjection/pkg/ds/container"
+
 // List holds the items, where each item has a pointer point to the next item
 type List struct {
 	head *item
@@ -7,14 +9,24 @@ type List struct {
 	size int
 }
 
+type item struct {
+	value interface{}
+	next  *item
+}
+
 // ListIterator use to traverse List
 type ListIterator struct {
 	curr *item
 }
 
-type item struct {
-	value interface{}
-	next  *item
+// Next returns next value of the list or nil for the end
+func (li *ListIterator) Next() interface{} {
+	if li.curr == nil {
+		return nil
+	}
+	rv := li.curr.value
+	li.curr = li.curr.next
+	return rv
 }
 
 // New instantiates a new list and adds the passed values, if any, to the list
@@ -102,17 +114,16 @@ func (list *List) Clear() {
 	list.tail = nil
 }
 
-// GetIterator returns list iterator
-func (list *List) GetIterator() *ListIterator {
+// Iterator returns list iterator
+func (list *List) Iterator() container.Iterator {
 	return &ListIterator{curr: list.head}
 }
 
-// Next returns next value of the list or nil for the end
-func (li *ListIterator) Next() interface{} {
-	if li.curr == nil {
-		return nil
+// Values returns list iterator
+func (list *List) Values() []interface{} {
+	rv := make([]interface{}, list.size)
+	for i, j := 0, list.head; j != nil; i, j = i+1, j.next {
+		rv[i] = j.value
 	}
-	rv := li.curr.value
-	li.curr = li.curr.next
 	return rv
 }

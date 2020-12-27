@@ -5,7 +5,8 @@ type Container interface {
 	IsEmpty() bool
 	Size() int
 	Clear()
-	GetIterator() Iterator
+	Iterator() Iterator
+	Values() []interface{}
 }
 
 // Iterator interface that use to traverse container

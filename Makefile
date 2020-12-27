@@ -31,7 +31,7 @@ test-pkg: test-pkg-ds
 
 ### Pkg ds test
 test-pkg-ds:
-	$(GOTEST) -v ./pkg/ds/lists/singlylinkedlist/
+	$(GOTEST) -v ./pkg/ds/lists/...
 
 
 # Programs
