@@ -1,8 +1,8 @@
-package singlylinkedlist
+package doublylinkedlist
 
 import "github.com/lycheng/gobjection/pkg/ds/container"
 
-// List holds the items, where each item has a pointer point to the next item
+// List holds the elements, where each element points to the next and previous element
 type List struct {
 	head *item
 	tail *item
@@ -11,11 +11,17 @@ type List struct {
 
 type item struct {
 	value interface{}
+	prev  *item
 	next  *item
 }
 
 // Iterator use to traverse List
 type Iterator struct {
+	curr *item
+}
+
+// ReverseIterator use for reverse loop
+type ReverseIterator struct {
 	curr *item
 }
 
@@ -26,6 +32,16 @@ func (i *Iterator) Next() interface{} {
 	}
 	rv := i.curr.value
 	i.curr = i.curr.next
+	return rv
+}
+
+// Next returns prev value of the list or nil for the head
+func (i *ReverseIterator) Next() interface{} {
+	if i.curr == nil {
+		return nil
+	}
+	rv := i.curr.value
+	i.curr = i.curr.prev
 	return rv
 }
 
@@ -44,11 +60,12 @@ func (list *List) Append(values ...interface{}) {
 		return
 	}
 	for _, val := range values {
-		ni := &item{value: val}
+		ni := &item{value: val, prev: list.tail}
 		if list.head == nil {
 			list.head = ni
 			list.tail = list.head
 		} else {
+			ni.prev = list.tail
 			list.tail.next = ni
 			list.tail = ni
 		}
@@ -71,14 +88,17 @@ func (list *List) Pop(i int) (interface{}, bool) {
 
 	if curr == list.head {
 		list.head = curr.next
+		curr.prev = nil
 	}
 
 	if curr == list.tail {
 		list.tail = curr
+		curr.next = nil
 	}
 
 	if prev != nil {
 		prev.next = curr.next
+		curr.next.prev = prev
 	}
 	list.size--
 	return curr.value, true
@@ -117,6 +137,11 @@ func (list *List) Clear() {
 // Iterator returns list iterator
 func (list *List) Iterator() container.Iterator {
 	return &Iterator{curr: list.head}
+}
+
+// ReverseIterator returns list iterator
+func (list *List) ReverseIterator() container.Iterator {
+	return &ReverseIterator{curr: list.tail}
 }
 
 // Values returns list iterator
