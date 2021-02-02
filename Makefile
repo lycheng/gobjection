@@ -32,6 +32,7 @@ test-pkg: test-pkg-ds
 ### Pkg ds test
 test-pkg-ds:
 	$(GOTEST) -v ./pkg/ds/lists/...
+	$(GOTEST) -v ./pkg/ds/sets/...
 
 
 # Programs
