@@ -2,6 +2,8 @@ package singlylinkedlist
 
 import (
 	"testing"
+
+	"github.com/lycheng/gobjection/pkg/ds/lists"
 )
 
 func assertListEquals(values []interface{}, expected []int) bool {
@@ -11,6 +13,10 @@ func assertListEquals(values []interface{}, expected []int) bool {
 		}
 	}
 	return true
+}
+
+func TestListsImplementation(t *testing.T) {
+	var _ lists.List = (*List)(nil)
 }
 
 func TestNewList(t *testing.T) {

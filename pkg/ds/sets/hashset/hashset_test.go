@@ -1,6 +1,16 @@
 package hashset
 
-import "testing"
+import (
+	"reflect"
+	"sort"
+	"testing"
+
+	"github.com/lycheng/gobjection/pkg/ds/sets"
+)
+
+func TestSetsImplementation(t *testing.T) {
+	var _ sets.Set = (*Set)(nil)
+}
 
 func TestSet(t *testing.T) {
 	set := New()
@@ -39,16 +49,13 @@ func TestSetIterator(t *testing.T) {
 	set := New()
 	set.Add(1, 2, 3)
 
-	rv := make(map[int]int)
-	sum := 0
-
+	rv := make([]int, 0)
 	iter := set.Iterator()
 	for v := iter.Next(); v != nil; v = iter.Next() {
-		rv[v.(int)] = 1
-		sum += v.(int)
+		rv = append(rv, v.(int))
 	}
-
-	if len(rv) != 3 || sum != 6 {
+	sort.Ints(rv)
+	if reflect.DeepEqual(rv, []int{1, 2, 3}) {
 		t.Error("invalid iterator values")
 	}
 }
